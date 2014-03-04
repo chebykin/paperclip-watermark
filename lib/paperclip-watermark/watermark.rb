@@ -25,6 +25,7 @@ module Paperclip
       @whiny            = options[:whiny].nil? ? true : options[:whiny]
       @format           = options[:format]
       @watermark_path   = options[:watermark_path]
+      @dissolve         = options[:dissolve] || false
       @position         = options[:position].nil? ? "SouthEast" : options[:position]
       @overlay          = options[:overlay].nil? ? true : false
       @current_format   = File.extname(@file.path)
@@ -61,7 +62,9 @@ module Paperclip
 
       if watermark_path
         command = "composite"
-        params = %W[-gravity #{@position} #{watermark_path} #{tofile(dst)}]
+        params = []
+        params += %W[-dissolve #{@dissolve}] if @dissolve
+        params += %W[-gravity #{@position} #{watermark_path} #{tofile(dst)}]
         params << tofile(dst)
         begin
           success = Paperclip.run(command, params.flatten.compact.collect{|e| "'#{e}'"}.join(" "))
